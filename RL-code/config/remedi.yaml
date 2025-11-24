@@ -1,0 +1,73 @@
+desc: RemeDi-RL
+
+network_kwargs: 
+    class_name: networks.block_llada.modelling_llada_bitowel.LLaDAUPMModelLM.from_pretrained
+    pretrained_model_name_or_path: /storage/qiguojunLab/wangyuhang/model/remask_try/stage3_2/2025-09-08/00000-gpus32-batch2-bf16-Remask-SFT-upmloss=all-midlayer-weight=1.0-log-removed/ckpt-001001
+    torch_dtype: bfloat16
+
+
+data_loader_kwargs: 
+    class_name: general_data.dataloader.load_rl_dataset
+    index_dir: general_data/index
+    weights: [1.0]
+    num_workers: 4
+    prefetch_factor: 2
+
+infer_kwargs:
+    func_name: networks.block_llada.rl_utils.generate_block_diffusion_bitowel
+    num_generations: 2
+    repeat_times: 8
+    fwd_num_generations: 8
+    fwd_repeat_times: 2
+    steps: 16
+    max_length: 1024
+    block_size: 32
+    sample: true
+    use_general_reward: true
+    upm_temperature: 1.2
+    temperature: 1.2
+
+loss_kwargs: 
+    func_name: networks.block_llada.rl_utils.logprob_loss_block_bitowel
+    eps: 0.2
+    beta: 0.0
+    loss_scale: false
+    upm_temperature: 1.2
+    temperature: 1.2
+
+
+optimizer_kwargs:
+    class_name: torch.optim.AdamW
+    lr: 3.0e-6
+    betas: [0.9, 0.999]
+    eps: 1.0e-8
+    weight_decay: 0.00
+
+lr_scheduler_kwargs:
+    class_name: training.utils.lr_scheduler.warmup
+    t_warmup: 10
+
+tokenizer_kwargs:
+    class_name: transformers.AutoTokenizer.from_pretrained
+    pretrained_model_name_or_path: /storage/qiguojunLab/qiguojun/home/Models/GSAI-ML/LLaDA-8B-Instruct
+
+# other training args
+training_args:
+    func_name: training.training_loop_fsdp_general.training_loop
+    run_dir: runs
+    total_steps: 100
+    loss_scaling: 1.
+    grad_accumulation: 2
+    max_grad_norm: 1.0 # default
+    seed: 113
+    step_per_tick: 1 # increase this
+    snapshot_ticks: 10
+    state_dump_ticks: 500
+    precision: bf16
+    val_ticks: 1
+    skip_spike_grad: 1.0e+10
+    do_organize: False
+    buffer_size: 0
+    sample_interval: 1
+    use_batch_std: false
+    use_fsdp2: true
