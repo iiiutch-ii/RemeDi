@@ -41,7 +41,6 @@ The RL implementation is located in `RL-code/`.
 
 As with the SFT pipeline, please refer to this file to locate the RL loss and model definitions.
 
-
 ## 📦 Open-Sourced Models
 
 We also provide the trained models used in our experiments:
@@ -49,3 +48,5 @@ We also provide the trained models used in our experiments:
 - [🌟 RemeDi-Instruct (Hugging Face)](https://huggingface.co/iiiutch/RemeDi-Instruct)
 
 - [🚀 RemeDi-RL (Hugging Face)](https://huggingface.co/iiiutch/RemeDi-RL)
+
+  Inference code is provided in `inferece.py`
